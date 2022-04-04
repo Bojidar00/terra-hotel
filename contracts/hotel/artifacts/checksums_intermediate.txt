@@ -1,0 +1,1 @@
+2ff1f61cbb84a681894bada8e8258ede59b8ecf756e4428e99a233a10de49c65  ./target/wasm32-unknown-unknown/release/hotel.wasm

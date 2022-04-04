@@ -1,0 +1,10 @@
+{
+  "testnet": {
+    "hotel": {
+      "codeId": "59588",
+      "contractAddresses": {
+        "default": "terra1fu426snvt50262y48y9udewgu0n42h2hgvl79k"
+      }
+    }
+  }
+}
