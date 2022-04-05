@@ -3,7 +3,7 @@ use std::fs::create_dir_all;
 
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 
-use hotel::msg::{HotelResponse,CountResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
+use hotel::msg::{HotelResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
 use hotel::state::State;
 
 fn main() {
@@ -16,6 +16,5 @@ fn main() {
     export_schema(&schema_for!(ExecuteMsg), &out_dir);
     export_schema(&schema_for!(QueryMsg), &out_dir);
     export_schema(&schema_for!(State), &out_dir);
-    export_schema(&schema_for!(CountResponse), &out_dir);
     export_schema(&schema_for!(HotelResponse), &out_dir);
 }

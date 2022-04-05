@@ -1,9 +1,17 @@
 {
   "testnet": {
     "hotel": {
-      "codeId": "59588",
+      "codeId": "60299",
       "contractAddresses": {
-        "default": "terra1fu426snvt50262y48y9udewgu0n42h2hgvl79k"
+        "default": "terra1x05sry5tken5kdp7rrsnqzs287ppryh742t8q6"
+      }
+    }
+  },
+  "localterra": {
+    "hotel": {
+      "codeId": "15",
+      "contractAddresses": {
+        "default": "terra1480va6dakfp4md8qwaszw2l87dkf3aaw2zzj8j"
       }
     }
   }

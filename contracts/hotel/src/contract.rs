@@ -4,11 +4,11 @@ use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response,
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{HotelResponse, CountResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{HotelResponse, ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{State, STATE, Hotel, HOTELS};
 
 // version info for migration info
-const CONTRACT_NAME: &str = "crates.io:counter";
+const CONTRACT_NAME: &str = "crates.io:hotel";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -16,10 +16,9 @@ pub fn instantiate(
     deps: DepsMut,
     _env: Env,
     info: MessageInfo,
-    msg: InstantiateMsg,
+    _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     let state = State {
-        count: msg.count,
         owner: info.sender.clone(),
     };
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
@@ -28,7 +27,7 @@ pub fn instantiate(
     Ok(Response::new()
         .add_attribute("method", "instantiate")
         .add_attribute("owner", info.sender)
-        .add_attribute("count", msg.count.to_string()))
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -39,32 +38,14 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Increment {} => try_increment(deps),
-        ExecuteMsg::Reset { count } => try_reset(deps, info, count),
         ExecuteMsg::CreateHotel{name,rooms,price_per_day}=>try_create_hotel(deps,info,name,rooms,price_per_day),
         ExecuteMsg::TakeRoom{hotel_name,days}=>try_take_room(deps,info,env,hotel_name,days),
         ExecuteMsg::TakeFunds{hotel_name}=>take_funds(deps, info,env, hotel_name),
     }
 }
 
-pub fn try_increment(deps: DepsMut) -> Result<Response, ContractError> {
-    STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-        state.count += 1;
-        Ok(state)
-    })?;
 
-    Ok(Response::new().add_attribute("method", "try_increment"))
-}
-pub fn try_reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Response, ContractError> {
-    STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-        if info.sender != state.owner {
-            return Err(ContractError::Unauthorized {});
-        }
-        state.count = count;
-        Ok(state)
-    })?;
-    Ok(Response::new().add_attribute("method", "reset"))
-}
+
 
 pub fn try_create_hotel(deps: DepsMut,info: MessageInfo,name:String,rooms:u32,price_per_day:u32)->Result<Response,ContractError>{
     HOTELS.update(deps.storage,name.clone(), | hotel: Option<Hotel>| -> Result<_, ContractError> {
@@ -145,15 +126,11 @@ Ok(Response::new().add_attributes(attrs).add_messages(msgs))
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::GetCount {} => to_binary(&query_count(deps)?),
         QueryMsg::GetHotel {name} => to_binary(&query_hotel(deps,name)?),
     }
 }
 
-fn query_count(deps: Deps) -> StdResult<CountResponse> {
-    let state = STATE.load(deps.storage)?;
-    Ok(CountResponse { count: state.count })
-}
+
 
 fn query_hotel(deps: Deps, name:String)->StdResult<HotelResponse>{
     let hotel = HOTELS.load(deps.storage, name)?;
@@ -172,7 +149,7 @@ mod tests {
         let mut deps = mock_dependencies(&coins(2, "token"));
         
 
-        let msg = InstantiateMsg { count: 0 };
+        let msg = InstantiateMsg {};
         let info = mock_info("creator", &coins(2, "token"));
         let _res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
 
@@ -196,7 +173,7 @@ mod tests {
         let  env = mock_env();
         
 
-        let msg = InstantiateMsg { count: 0 };
+        let msg = InstantiateMsg {};
         let info = mock_info("creator", &coins(2, "token"));
         let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
 
@@ -235,7 +212,7 @@ mod tests {
         let  env = mock_env();
         
 
-        let msg = InstantiateMsg { count: 0 };
+        let msg = InstantiateMsg {};
         let info = mock_info("creator", &coins(2, "token"));
         let _res = instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
 
