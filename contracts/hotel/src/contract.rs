@@ -68,6 +68,7 @@ pub fn try_take_room(deps:DepsMut,info: MessageInfo,env:Env, hotel_name:String, 
                   
                 let time = env.block.time;
                 let millis = (time.seconds() * 1_000) + (time.nanos() / 1_000_000);
+                
                    _hotel.free_rooms-=1;
                    _hotel.taken_rooms.push(millis+(days as u64)*(60*60*24*1000));
                    _hotel.generated_funds+=_hotel.price_per_day * days;
@@ -92,7 +93,8 @@ pub fn check_rooms(mut hotel: Hotel,env:Env) -> Hotel{
 
     
     for f in hotel.taken_rooms.clone() {
-        if f > millis {
+        if f < millis {
+           
             hotel.taken_rooms.swap_remove(i);
             hotel.free_rooms+=1;
         }
@@ -170,7 +172,7 @@ mod tests {
     #[test]
     fn release_room() {
         let mut deps = mock_dependencies(&coins(2, "token"));
-        let  env = mock_env();
+        let mut   env = mock_env();
         
 
         let msg = InstantiateMsg {};
@@ -191,7 +193,11 @@ mod tests {
         let value: HotelResponse = from_binary(&res).unwrap();
         assert_eq!(1, value.hotel.free_rooms);
 
-        env.block.time.plus_seconds((60*60*24*2)+1000);
+
+
+     
+        env.block.time= env.block.time.plus_seconds(60*60*24);
+       
 
         let info = mock_info("anyone3", &coins(2, "luna"));
         let msg = ExecuteMsg::TakeRoom {hotel_name:"myhotel".to_string(),days:2};
